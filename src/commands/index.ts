@@ -1,3 +1,3 @@
-import { helloWorld } from "./hello-world";
+import { createComponent } from "./create-component";
 
-export { helloWorld };
+export { createComponent };
