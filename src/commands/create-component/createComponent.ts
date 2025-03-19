@@ -12,7 +12,7 @@ export const createComponent = async (data: Data) => {
     ["Option 1", "Option 2", "Option 3"],
     {
       placeHolder: "Choose an option",
-    }
+    },
   );
 
   const name = await vscode.window.showInputBox({

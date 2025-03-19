@@ -1,10 +1,10 @@
 {
-  "name": "flow-templates",
+  "name": "flow",
   "displayName": "Flow Templates",
   "description": "Modern tool for component code generation",
   "version": "0.1.0",
   "icons": "assets/icons/logo.png",
-  "publisher": "flow-templates",
+  "publisher": "flowtemplates",
   "author": "Templates Flow",
   "license": "Apache-2.0",
   "repository": {
@@ -24,35 +24,32 @@
     "code generation",
     "component"
   ],
-  "categories": [
-    "Other",
-    "Programming Languages"
-  ],
+  "categories": ["Other", "Programming Languages"],
   "activationEvents": [],
   "main": "dist/extension.js",
   "contributes": {
     "languages": [
       {
-        "id": "flowtemplates",
-        "aliases": [
-          "Flow Templates",
-          "FT"
-        ],
-        "extensions": [
-          ".ft"
-        ],
-        "configuration": "src/language/language-configuration.json"
+        "id": "ft",
+        "aliases": ["Flow Template", "FT"],
+        "extensions": [".ft"],
+        "configuration": "language/language-configuration.json"
       },
       {
         "id": "jsonc",
-        "extensions": [
-          "flow.json"
-        ]
+        "extensions": ["flow.json"]
+      }
+    ],
+    "grammars": [
+      {
+        "language": "ft",
+        "scopeName": "source.ft",
+        "path": "language/ft.tmGrammars.json"
       }
     ],
     "commands": [
       {
-        "command": "flow-templates.createComponent",
+        "command": "flow.createComponent",
         "title": "Create component"
       }
     ],
@@ -60,7 +57,7 @@
       "explorer/context": [
         {
           "when": "explorerResourceIsFolder",
-          "command": "flow-templates.createComponent",
+          "command": "flow.createComponent",
           "title": "Create component"
         }
       ]
@@ -68,16 +65,16 @@
   },
   "scripts": {
     "vscode:prepublish": "pnpm run package",
-    "compile": "pnpm run check-types && pnpm run lint && node esbuild.js",
+    "compile": "pnpm run check-types && node esbuild.js",
     "watch": "npm-run-all -p watch:*",
     "watch:esbuild": "node esbuild.js --watch",
     "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
-    "package": "pnpm run check-types && pnpm run lint && node esbuild.js --production",
+    "package": "pnpm run check-types && node esbuild.js --production",
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",
-    "pretest": "pnpm run compile-tests && pnpm run compile && pnpm run lint",
+    "pretest": "pnpm run compile-tests && pnpm run compile",
     "check-types": "tsc --noEmit",
-    "lint": "eslint src",
+    "format": "biome format --write",
     "test": "vscode-test"
   },
   "devDependencies": {
