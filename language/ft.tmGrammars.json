@@ -4,189 +4,212 @@
   "name": "FT",
   "patterns": [
     { "include": "#comment-block" },
-    { "include": "#statement-block" },
-    { "include": "#expression-block" }
+    { "include": "#expression-block" },
+    { "include": "#statement-block" }
   ],
   "repository": {
     "comment-block": {
-      "patterns": [
-        {
-          "begin": "{#",
-          "end": "#}",
-          "name": "comment.block.ft"
-        }
-      ]
-    },
-    "statement-block": {
-      "patterns": [
-        {
-          "begin": "{%",
-          "end": "%}",
-          "name": "meta.block.statement.ft",
-          "patterns": [
-            { "include": "#keywords" },
-            { "include": "#operators" },
-            { "include": "#numbers" },
-            { "include": "#strings" },
-            { "include": "#braces" },
-            { "include": "#boolean" },
-            { "include": "#ternaries" },
-            { "include": "#filters" }
-          ]
-        }
-      ]
+      "begin": "\\{#",
+      "end": "#\\}",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.comment.ft" }
+      },
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.comment.ft" }
+      },
+      "name": "comment.block.ft"
     },
     "expression-block": {
+      "begin": "\\{\\{",
+      "end": "\\}\\}",
+      "name": "meta.expression-block.ft",
+      "patterns": [{ "include": "#primitives" }]
+    },
+    "statement-block": {
+      "begin": "\\{\\%",
+      "end": "\\%\\}$",
+      "name": "meta.statement-block.ft",
       "patterns": [
         {
-          "begin": "{{",
-          "end": "}}",
-          "name": "meta.block.expression.ft",
-          "patterns": [
-            { "include": "#operators" },
-            { "include": "#numbers" },
-            { "include": "#strings" },
-            { "include": "#braces" },
-            { "include": "#boolean" },
-            { "include": "#ternaries" },
-            { "include": "#filters" }
-          ]
+          "match": "\\s*(if|else\\s+if|switch|case|genif)\\s+(.*)\\%\\}",
+          "captures": {
+            "1": {
+              "name": "keyword.control.ft"
+            },
+            "2": {
+              "name": "meta.statement.ft",
+              "patterns": [{ "include": "#primitives" }]
+            }
+          }
+        },
+        {
+          "match": "\\s*(end|default)\\s*(.*)\\%\\}",
+          "captures": {
+            "1": {
+              "name": "keyword.control.ft"
+            },
+            "2": {
+              "name": "invalid.illegal"
+            }
+          }
         }
       ]
     },
-    "keywords": {
+    "primitives": {
       "patterns": [
-        { "include": "#conditional" },
-        { "include": "#switch" },
-        { "include": "#end" },
-        { "include": "#genif" }
+        { "include": "#numbers" },
+        { "include": "#booleans" },
+        { "include": "#strings" },
+        { "include": "#ternaries" },
+        { "include": "#operators" },
+        { "include": "#filters" },
+        { "include": "#variables" }
       ]
     },
-    "switch": {
-      "match": "\\b(switch|case|default)\\b",
-      "name": "keyword.control.switch.ft"
+    "variables": {
+      "match": "(?:if|else|genif|switch|case|default|end)|([_$[:alpha:]][_$[:alnum:]]*)",
+      "captures": {
+        "1": {
+          "name": "meta.definition.variable.ft variable.other.constant.ft"
+        }
+      }
     },
-    "conditional": {
-      "match": "\\b(if|else\\s*if|else)\\b",
-      "name": "keyword.control.conditional.ft"
+    "numbers": {
+      "match": "(\\d+(\\.)?\\d*)",
+      "captures": {
+        "1": {
+          "name": "constant.numeric.decimal.ft"
+        },
+        "2": {
+          "name": "meta.delimiter.decimal.period.ft"
+        }
+      }
     },
-    "end": {
-      "match": "\\bend\\b",
-      "name": "keyword.control.end.ft"
-    },
-    "genif": {
-      "match": "\\bgenif\\b",
-      "name": "keyword.control.genif.ft"
-    },
-    "filters": {
-      "name": "meta.filter.ft",
-      "patterns": [
-        { "include": "#filters-call" },
-        { "include": "#filters-operator" }
-      ]
-    },
-    "filters-operator": {
-      "name": "keyword.operator.filter.ft",
-      "match": "->"
-    },
-    "filters-call": {
-      "name": "entity.name.function.ft meta.function-call.ft meta.filter-call.ft",
-      "match": "\\b(snake|camel|pascal|kebab|title|capitalize|upper|lower|length)\\b"
-    },
-    "ternaries": {
-      "name": "keyword.operator.ternary.ft",
-      "patterns": [
-        { "include": "#ternaries-words" },
-        { "include": "#ternaries-symbols" }
-      ]
-    },
-    "ternaries-words": {
-      "name": "keyword.operator.ternary.word.ft",
-      "match": "\\b(do|else)\\b"
-    },
-    "ternaries-symbols": {
-      "name": "keyword.operator.ternary.symbols.ft",
-      "match": "[\\?\\:]"
+    "booleans": {
+      "match": "\\b(?:(true)|(false))\\b",
+      "captures": {
+        "1": {
+          "name": "constant.language.boolean.true.ft"
+        },
+        "2": {
+          "name": "constant.language.boolean.false.ft"
+        }
+      }
     },
     "strings": {
       "patterns": [
-        { "include": "#qstring-single" },
-        { "include": "#qstring-double" }
-      ]
-    },
-    "qstring-double": {
-      "name": "string.quoted.double.ft",
-      "begin": "\"",
-      "beginCaptures": {
-        "0": {
-          "name": "punctuation.definition.string.begin.ft"
-        }
-      },
-      "end": "(\")|((?:[^\\\\\\n])$)",
-      "endCaptures": {
-        "1": {
-          "name": "punctuation.definition.string.end.ft"
-        },
-        "2": {
-          "name": "invalid.illegal.newline.ft"
-        }
-      }
-    },
-    "qstring-single": {
-      "name": "string.quoted.single.ft",
-      "begin": "'",
-      "beginCaptures": {
-        "0": {
-          "name": "punctuation.definition.string.begin.ft"
-        }
-      },
-      "end": "(\\')|((?:[^\\\\\\n])$)",
-      "endCaptures": {
-        "1": {
-          "name": "punctuation.definition.string.end.ft"
-        },
-        "2": {
-          "name": "invalid.illegal.newline.ft"
-        }
-      }
-    },
-    "braces": {
-      "name": "meta.brace.round.ft",
-      "match": "[\\(\\)]"
-    },
-    "numbers": {
-      "patterns": [
         {
-          "name": "constant.numeric.integer.ft",
-          "match": "(?<!\\.)\\b[-+]?\\d+\\b(?!\\.\\d)"
+          "name": "string.quoted.double.ft",
+          "begin": "\"",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.ft"
+            }
+          },
+          "end": "(\")|((?:[^\\\\\\n])$)",
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.definition.string.end.ft"
+            },
+            "2": {
+              "name": "invalid.illegal.newline.ft"
+            }
+          }
         },
         {
-          "name": "constant.numeric.float.ft",
-          "match": "\\b[+-]?\\d+\\.\\d+\\b"
+          "name": "string.quoted.single.ft",
+          "begin": "'",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.string.begin.ft"
+            }
+          },
+          "end": "(\\')|((?:[^\\\\\\n])$)",
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.definition.string.end.ft"
+            },
+            "2": {
+              "name": "invalid.illegal.newline.ft"
+            }
+          }
         }
       ]
     },
     "operators": {
       "patterns": [
         {
-          "name": "keyword.operator.logical.ft",
-          "match": "(?<!\\w)(or|and|not|is)(?!\\w)"
+          "match": "(\\+|\\*\\*|\\*|\\-(?!>)|\\/\\/|\\/|\\%)",
+          "captures": {
+            "1": {
+              "name": "keyword.operator.arithmetic.ft"
+            }
+          }
         },
         {
-          "name": "keyword.operator.symbols.ft",
-          "match": "(\\|\\||&&|!|==|!=)"
-        },
-        {
-          "name": "keyword.operator.arithmetic.ft",
-          "match": "(\\+|-|\\*\\*?|\\/\\/|\\/|%|>=|<=|>|<)"
+          "patterns": [
+            {
+              "match": "\\s(or|and|is|not)\\s",
+              "captures": {
+                "1": {
+                  "name": "meta.operator.logical.word.ft keyword.operator.logical.ft"
+                }
+              }
+            },
+            {
+              "match": "(\\=\\=|\\!\\=|\\&\\&|\\|\\|)",
+              "captures": {
+                "1": {
+                  "name": "meta.operator.logical.symbols.ft keyword.operator.logical.ft"
+                }
+              }
+            }
+          ]
         }
       ]
     },
-    "boolean": {
+    "ternaries": {
       "patterns": [
-        { "name": "constant.language.boolean.true.ft", "match": "\\btrue\\b" },
-        { "name": "constant.language.boolean.false.ft", "match": "\\bfalse\\b" }
+        {
+          "match": "((\\?)|(\\:))",
+          "captures": {
+            "1": {
+              "name": "keyword.operator.ternary.symbol.ft"
+            },
+            "2": {
+              "name": "meta.operator.ternary-if.ft"
+            },
+            "3": {
+              "name": "meta.operator.ternary-else.ft"
+            }
+          }
+        },
+        {
+          "match": "\\s((do)|(else))\\s",
+          "captures": {
+            "1": {
+              "name": "keyword.operator.ternary.word.ft"
+            },
+            "2": {
+              "name": "meta.operator.ternary-if.ft"
+            },
+            "3": {
+              "name": "meta.operator.ternary-else.ft"
+            }
+          }
+        }
       ]
+    },
+    "filters": {
+      "match": "(->)\\s*(\\b\\w+\\b)?",
+      "captures": {
+        "1": {
+          "name": "keyword.operator.filter.ft"
+        },
+        "2": {
+          "name": "entity.name.function.ft meta.function-call.ft"
+        }
+      }
     }
   }
 }
