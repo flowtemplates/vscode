@@ -5,12 +5,18 @@
   "patterns": [
     { "include": "#comment-block" },
     { "include": "#expression-block" },
-    { "include": "#statement-block" }
+    { "include": "#statement-block" },
+    { "include": "#embedded" }
   ],
   "repository": {
+    "embedded": {
+      "begin": "```",
+      "end": "```",
+      "name": "gg.ft"
+    },
     "comment-block": {
-      "begin": "\\{#",
-      "end": "#\\}",
+      "begin": "\\{\\#",
+      "end": "\\#\\}",
       "beginCaptures": {
         "0": { "name": "punctuation.definition.comment.ft" }
       },
@@ -27,11 +33,11 @@
     },
     "statement-block": {
       "begin": "\\{\\%",
-      "end": "\\%\\}$",
+      "end": "\\%\\}",
       "name": "meta.statement-block.ft",
       "patterns": [
         {
-          "match": "\\s*(if|else\\s+if|switch|case|genif)\\s+(.*)\\%\\}",
+          "match": "\\s*(if|else\\s+if|switch|case|genif)\\s+(.*)(?=\\%\\})",
           "captures": {
             "1": {
               "name": "keyword.control.ft"
@@ -43,13 +49,13 @@
           }
         },
         {
-          "match": "\\s*(end|default)\\s*(.*)\\%\\}",
+          "match": "\\s*(end|default)\\s*(.*)(?=\\%\\})",
           "captures": {
             "1": {
               "name": "keyword.control.ft"
             },
             "2": {
-              "name": "invalid.illegal"
+              "name": "invalid.illegal.illegal-expression.ft"
             }
           }
         }
@@ -63,13 +69,17 @@
         { "include": "#ternaries" },
         { "include": "#operators" },
         { "include": "#filters" },
-        { "include": "#variables" }
+        { "include": "#variables" },
+        { "include": "#braces" }
       ]
     },
     "variables": {
-      "match": "(?:if|else|genif|switch|case|default|end)|([_$[:alpha:]][_$[:alnum:]]*)",
+      "match": "\\b(if|else|genif|switch|case|default|end)\\b|([_$[:alpha:]][_$[:alnum:]]*)",
       "captures": {
         "1": {
+          "name": "invalid.illegal.illegal-variable.ft"
+        },
+        "2": {
           "name": "meta.definition.variable.ft variable.other.constant.ft"
         }
       }
@@ -135,6 +145,14 @@
           }
         }
       ]
+    },
+    "braces": {
+      "match": "[\\(\\)]",
+      "captures": {
+        "0": {
+          "name": "meta.brace.round.ft"
+        }
+      }
     },
     "operators": {
       "patterns": [
